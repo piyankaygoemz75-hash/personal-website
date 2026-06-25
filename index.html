@@ -28,13 +28,13 @@
   body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.8;overflow-x:hidden;width:100%;min-height:100vh;margin:0;padding:0}
 
   /* ===== MOUSE TRAIL CANVAS ===== */
-  #mouseTrail{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+  #mouseTrail{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1}
 
   /* ===== PETALS CANVAS ===== */
-  #petalsCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  #petalsCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-2}
 
   /* ===== NOISE ===== */
-  .noise{position:fixed;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:1}
+  .noise{position:fixed;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:-3}
 
   /* ===== LAYOUT ===== */
   .wrapper{position:relative;z-index:3;max-width:1000px;margin:0 auto;padding:0 24px}
@@ -160,6 +160,22 @@
   .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease-out,transform 0.7s ease-out}
   .reveal.visible{opacity:1;transform:translateY(0)}
 
+  /* ===== LIFE FEED ===== */
+  .feed-post{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px;transition:all 0.3s}
+  .feed-post:hover{border-color:var(--red-wine)}
+  .feed-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .feed-avatar{width:40px;height:40px;border-radius:50%;background:var(--red-wine);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden}
+  .feed-avatar img{width:100%;height:100%;object-fit:cover}
+  .feed-meta{flex:1}
+  .feed-name{font-weight:700;color:var(--text-bright);font-size:0.9rem}
+  .feed-time{font-size:0.7rem;color:var(--text-dim)}
+  .feed-body{font-size:0.9rem;color:var(--text);line-height:1.9;white-space:pre-line;margin-bottom:12px}
+  .feed-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px}
+  .feed-images img{width:100%;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:transform 0.2s}
+  .feed-images img:hover{transform:scale(1.02)}
+  .feed-delete{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:2px 8px;transition:color 0.3s}
+  .feed-delete:hover{color:var(--red-glow)}
+
   /* ===== RESPONSIVE ===== */
   @media(max-width:768px){.nav-links{gap:12px}.nav-links a,.nav-links button{font-size:0.7rem}.card{padding:16px}.gunpla-grid{grid-template-columns:1fr}}
   @media(max-width:480px){.nav{flex-direction:column;gap:10px}.hero{min-height:80vh}}
@@ -181,6 +197,7 @@
   <div class="nav-logo">SIZEKUN_沢坤</div>
   <ul class="nav-links">
     <li><button data-page="home">首页</button></li>
+    <li><button data-page="life">生活</button></li>
     <li><button data-page="poetry">诗歌</button></li>
     <li><button data-page="gunpla">高达</button></li>
     <li><button data-page="profile">数据</button></li>
@@ -268,9 +285,109 @@
       </div>
     </section>
 
+    <section class="section reveal">
+      <div class="section-label">// MY GIRL</div>
+      <h2 class="section-title">我的女朋友</h2>
+      <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex-shrink:0;">
+          <img src="gf.jpg" alt="我们" style="width:260px;border-radius:12px;border:2px solid var(--red-wine);box-shadow:0 0 30px rgba(196,30,58,0.15);">
+        </div>
+        <div style="flex:1;min-width:280px;">
+          <p style="font-family:var(--font-serif);font-size:1.3rem;color:var(--text-bright);font-weight:700;margin-bottom:16px;">Xie Yongqing</p>
+          <p style="color:var(--text);line-height:2.1;font-size:0.95rem;">
+            对，这就是我的女友。可爱大方，优雅能干，让我折服于她的石榴裙下。
+            我们发誓要永远走下去。我是小狗，她是小猫，一起可可爱爱的，
+            互相扶持着走向属于我们的幸福而平凡的生活。
+          </p>
+          <p style="color:var(--text);line-height:2;font-size:0.9rem;margin-top:16px;">
+            每次和她在一起，我都会感慨，这就是爱呀。
+            哪怕我是个爱撒谎的小孩，哪怕我是个不爱干净的小孩，
+            哪怕我是个花钱大手大脚的小孩，哪怕我是个没钱的小孩，
+            我都能躲进她的怀里，像一个真的小孩，
+            寻找那种像母亲一样但又不一样的慰藉。
+            母亲爱我是因为我是她的孩子，但是她爱我，是因为我爱她。
+          </p>
+          <p style="color:var(--text-bright);line-height:2;font-size:0.9rem;">
+            多么伟大啊，多么可爱呀，多么令人羡慕呀，可是这就发生在我的身上。
+          </p>
+          <p style="color:var(--text-dim);font-size:0.85rem;margin-top:12px;">🐶 小狗 & 🐱 小猫 · 永远走下去</p>
+        </div>
+      </div>
+      <div style="margin-top:28px;padding:24px 28px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;display:flex;gap:32px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;font-family:var(--font-serif);font-size:0.9rem;color:var(--text-bright);line-height:2.2;white-space:pre-line;">向日葵 遇见了 那个小诗人
+你不敢抬头的眼 羞涩的眼神
+扭捏的衣角 悄悄拉出一朵小花
+我们在飞雪的天 看着烟火落下
+像房间里的雪花 融化在脸颊
+那是一只 想触碰又收回的手啊
+
+春天是暖黄色的 毛绒小猫
+而你是大金毛 散发泥土的味道
+浓密的眉毛 还有小小的虎牙
+靠在我的肩膀 听着呼吸沙哑
+浑身都是狗狗味 揉揉你的头发
+你笑着对我说 真的好幸福呀</div>
+        <div style="flex:1;min-width:200px;font-family:var(--font-serif);font-size:0.9rem;color:var(--text-bright);line-height:2.2;white-space:pre-line;">原来爱不需要 那么刻骨铭心
+不需要生离死别 完美的剧情
+爱只是一双肩膀 握紧的掌心
+结局很远又很近 只要此刻走得坚定
+现在的所有幸福 都是触手可及
+像在暴雨里 起舞的那个你
+
+我是个小刺猬 伤心就蜷缩起来
+你是炸毛的小狮子 冒失却又豪迈
+满怀着热血 向往着自由的崇拜
+可你总挡在我身前 赶走所有阴霾
+威风凛凛的背影 那么直白
+让我再也不害怕 任何的伤害</div>
+        <div style="flex:1;min-width:200px;font-family:var(--font-serif);font-size:0.9rem;color:var(--text-bright);line-height:2.2;white-space:pre-line;">原来爱不需要 那么刻骨铭心
+不需要生离死别 完美的剧情
+爱只是一双肩膀 握紧的掌心
+结局很远又很近 只要此刻走得坚定
+现在的所有幸福 都是触手可及
+像在暴雨里 起舞的那个你
+
+谢谢你 闯进我的世界里
+把所有的敏感 都变成甜蜜
+你的肩膀 是我最安心的陆地
+
+小刺猬和小狮子 一直在一起
+大金毛和小诗人 永远不分离
+听你在我耳边 轻轻地说……
+好幸福呀。</div>
+      </div>
+    </section>
+
     <div class="footer">
       <div class="footer-poem">我就想当个死文清<br>在游戏与现实的交界处<br>找到属于自己的世界</div>
       <div class="footer-text">🐱 人以沢坤 © 2025 · Harbin, China · 哈尔滨商业大学 · 12.26 🎂</div>
+    </div>
+  </div>
+
+  <!-- ==================== LIFE PAGE ==================== -->
+  <div class="page" id="page-life">
+    <section class="section">
+      <div class="section-label">// LIFE</div>
+      <h2 class="section-title">生活分享</h2>
+
+      <div class="add-form">
+        <h3>+ 分享生活</h3>
+        <div class="form-row">
+          <textarea id="lifeText" placeholder="记录此刻..."></textarea>
+        </div>
+        <div class="form-row" style="align-items:center;">
+          <input type="file" id="lifeImage" accept="image/*" multiple style="flex:1;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:0.85rem;cursor:pointer;pointer-events:auto;">
+          <span id="lifeImageHint" style="font-size:0.75rem;color:var(--text-dim);"></span>
+        </div>
+        <button class="btn" onclick="addLifePost()">发布</button>
+      </div>
+
+      <div id="lifeFeed"></div>
+    </section>
+
+    <div class="footer">
+      <div class="footer-poem">生活是一首未完成的诗<br>每一天都是新的句子</div>
+      <div class="footer-text">🐱 人以沢坤 · 生活记录</div>
     </div>
   </div>
 
@@ -548,6 +665,7 @@
     // Render dynamic content
     if (name === 'poetry') renderPoems();
     if (name === 'gunpla') renderGunpla();
+    if (name === 'life') renderLife();
   }
 
   // ===== SCROLL REVEAL =====
@@ -783,6 +901,76 @@
     list.splice(index, 1);
     saveGunpla(list);
     renderGunpla();
+  }
+
+  // ===== LIFE FEED =====
+  const defaultLife = [
+    {text:'大手牵小手捏',images:['life_01.jpg'],time:'2025.06.25 18:30'},
+    {text:'二十有你',images:['life_02.jpg','life_03.jpg','life_04.jpg'],time:'2025.06.25 19:00'},
+    {text:'新的一年有你有我[害羞]',images:['life_05.jpg','life_06.jpg','life_07.jpg','life_08.jpg','life_09.jpg','life_10.jpg','life_11.jpg','life_12.jpg','life_13.jpg'],time:'2025.06.25 20:00'},
+    {text:'有的事情早在曾经下定了赌注',images:['life_14.jpg','life_15.jpg'],time:'2025.06.25 20:10'},
+    {text:'小猫洗脸',images:['life_16.jpg'],time:'2025.06.25 20:15'},
+    {text:'冰封住的是最美的花儿\n月牵扯到的是冰润的玉',images:['life_17.jpg','life_18.jpg','life_19.jpg','life_20.jpg','life_21.jpg','life_22.jpg','life_23.jpg','life_24.jpg'],time:'2025.06.25 20:20'},
+    {text:'最深情的告白也如同烟花般易散\n但夜色中的陪伴，却如同月光般\n年年望相似，年年照一人',images:['life_25.jpg','life_26.jpg','life_27.jpg','life_28.jpg','life_29.jpg','life_30.jpg'],time:'2025.06.25 20:25'},
+    {text:'我来书写你校园里最后的几帧画面',images:['life_31.jpg','life_32.jpg','life_33.jpg'],time:'2025.06.25 20:30'},
+    {text:'阳光下的你，泪水折射出的彩虹',images:['life_34.jpg','life_35.jpg','life_36.jpg','life_37.jpg','life_38.jpg','life_39.jpg','life_40.jpg','life_41.jpg','life_42.jpg'],time:'2025.06.25 20:35'}
+  ];
+  function loadLife() { const s = localStorage.getItem('sizekun_life'); const user = s ? JSON.parse(s) : []; return [...user, ...defaultLife]; }
+  function saveLife(posts) { localStorage.setItem('sizekun_life', JSON.stringify(posts)); }
+
+  function renderLife() {
+    const posts = loadLife();
+    const container = document.getElementById('lifeFeed');
+    container.innerHTML = posts.map((p, i) => `
+      <div class="feed-post reveal">
+        <div class="feed-header">
+          <div class="feed-avatar">🐱</div>
+          <div class="feed-meta">
+            <div class="feed-name">人以沢坤</div>
+            <div class="feed-time">${p.time}</div>
+          </div>
+          <button class="feed-delete" onclick="deleteLifePost(${i})">删除</button>
+        </div>
+        ${p.text ? `<div class="feed-body">${p.text}</div>` : ''}
+        ${p.images && p.images.length ? `<div class="feed-images">${p.images.map(img => `<img src="${img}" alt="生活照">`).join('')}</div>` : ''}
+      </div>
+    `).join('');
+    document.querySelectorAll('#lifeFeed .reveal').forEach(el => obs.observe(el));
+  }
+
+  async function addLifePost() {
+    const text = document.getElementById('lifeText').value.trim();
+    const fileInput = document.getElementById('lifeImage');
+    const files = fileInput.files;
+    const images = [];
+    if (files.length) {
+      for (const f of files) {
+        const dataUrl = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsDataURL(f);
+        });
+        images.push(dataUrl);
+      }
+    }
+    if (!text && !images.length) { alert('请至少输入文字或选择图片'); return; }
+    const posts = loadLife();
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    posts.unshift({ text, images, time: timeStr });
+    saveLife(posts);
+    renderLife();
+    document.getElementById('lifeText').value = '';
+    fileInput.value = '';
+    document.getElementById('lifeImageHint').textContent = '';
+  }
+
+  function deleteLifePost(index) {
+    if (!confirm('确定删除这条分享吗？')) return;
+    const posts = loadLife();
+    posts.splice(index, 1);
+    saveLife(posts);
+    renderLife();
   }
 
   // ===== INIT =====
