@@ -1020,8 +1020,12 @@
     document.getElementById('guestbookList').innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px;">加载中...</p>';
     const { data } = await db.from('guestbook').select('*').order('id', { ascending: false });
     const list = data || [];
+    const { data: allReplies } = await db.from('guestbook_replies').select('*').order('id', { ascending: true });
+    const replies = allReplies || [];
     const container = document.getElementById('guestbookList');
-    container.innerHTML = list.map(g => `
+    container.innerHTML = list.map(g => {
+      const msgReplies = replies.filter(r => r.guestbook_id === g.id);
+      return `
       <div class="feed-post reveal" style="margin-top:12px;">
         <div class="feed-header">
           <div class="feed-avatar" style="background:var(--bg-card-hover);">${g.name.charAt(0)}</div>
@@ -1032,8 +1036,18 @@
           <button class="feed-delete" onclick="deleteGuestbook(${g.id})">删除</button>
         </div>
         <div class="feed-body">${g.message}</div>
+        ${msgReplies.length ? `<div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:6px;">${msgReplies.map(r => `
+          <div style="font-size:0.82rem;padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;">
+            <div><strong style="color:var(--accent-blue);">${r.name}</strong><span style="color:var(--text-dim);">: ${r.reply}</span></div>
+            <button class="feed-delete" onclick="deleteReply(${r.id})" style="font-size:0.65rem;">删除</button>
+          </div>`).join('')}</div>` : ''}
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <input type="text" id="replyName_${g.id}" placeholder="名字" maxlength="20" style="width:80px;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:0.78rem;">
+          <input type="text" id="replyText_${g.id}" placeholder="回复..." maxlength="50" style="flex:1;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:0.78rem;">
+          <button class="btn-sm" onclick="addReply(${g.id})">回复</button>
+        </div>
       </div>
-    `).join('');
+    `}).join('');
     document.querySelectorAll('#guestbookList .reveal').forEach(el => obs.observe(el));
   }
 
@@ -1048,6 +1062,23 @@
     document.getElementById('gbName').value = '';
     document.getElementById('gbMessage').value = '';
     document.getElementById('gbCount').textContent = '0/50';
+  }
+
+  async function addReply(guestbookId) {
+    const name = document.getElementById('replyName_' + guestbookId).value.trim();
+    const reply = document.getElementById('replyText_' + guestbookId).value.trim();
+    if (!name) { alert('请输入你的名字'); return; }
+    if (!reply) { alert('请输入回复内容'); return; }
+    if (reply.length > 50) { alert('回复不能超过50字'); return; }
+    await db.from('guestbook_replies').insert({ guestbook_id: guestbookId, name, reply });
+    renderGuestbook();
+  }
+
+  async function deleteReply(id) {
+    if (!await checkAdmin()) return;
+    if (!confirm('确定删除这条回复吗？')) return;
+    await db.from('guestbook_replies').delete().eq('id', id);
+    renderGuestbook();
   }
 
   async function deleteGuestbook(id) {
