@@ -175,6 +175,8 @@
   .feed-images img:hover{transform:scale(1.02)}
   .feed-delete{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:2px 8px;transition:color 0.3s}
   .feed-delete:hover{color:var(--red-glow)}
+  .feed-export{background:none;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:0.7rem;padding:2px 10px;border-radius:4px;transition:all 0.3s;margin-left:auto}
+  .feed-export:hover{border-color:var(--gold);color:var(--gold)}
 
   /* ===== RESPONSIVE ===== */
   @media(max-width:768px){.nav-links{gap:12px}.nav-links a,.nav-links button{font-size:0.7rem}.card{padding:16px}.gunpla-grid{grid-template-columns:1fr}}
@@ -805,6 +807,7 @@
       <div class="card reveal">
         <div class="card-header">
           <span class="card-date">${p.date} · ${p.device}</span>
+          <button class="feed-export" onclick="exportItem('sizekun_poems',${i})">导出</button>
           <button class="delete-btn" onclick="deletePoem(${i})" title="删除">✕</button>
         </div>
         <div class="card-body">${p.text}</div>
@@ -867,6 +870,7 @@
         <div class="gunpla-info">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div class="gunpla-name">${g.name}</div>
+            <button class="feed-export" onclick="exportItem('sizekun_gunpla',${i})">导出</button>
             <button class="delete-btn" onclick="deleteGunpla(${i})" title="删除">✕</button>
           </div>
           <div class="gunpla-meta">${g.series} · ${g.status}</div>
@@ -929,6 +933,7 @@
             <div class="feed-name">人以沢坤</div>
             <div class="feed-time">${p.time}</div>
           </div>
+          <button class="feed-export" onclick="exportItem('sizekun_life',${i})">导出</button>
           <button class="feed-delete" onclick="deleteLifePost(${i})">删除</button>
         </div>
         ${p.text ? `<div class="feed-body">${p.text}</div>` : ''}
@@ -963,6 +968,15 @@
     document.getElementById('lifeText').value = '';
     fileInput.value = '';
     document.getElementById('lifeImageHint').textContent = '';
+  }
+
+  function exportItem(storageKey, index) {
+    const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (!data[index]) return;
+    const item = JSON.stringify(data[index], null, 2);
+    navigator.clipboard.writeText(item).then(() => {
+      alert('已复制到剪贴板！发给管理员即可更新网站。');
+    });
   }
 
   function deleteLifePost(index) {
