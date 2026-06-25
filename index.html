@@ -970,7 +970,9 @@
   }
 
   function exportItem(storageKey, index) {
-    const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    let data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    // Merge defaults for life
+    if (storageKey === 'sizekun_life') data = [...data, ...defaultLife];
     if (!data[index]) return;
     const item = JSON.stringify(data[index], null, 2);
     navigator.clipboard.writeText(item).then(() => {
