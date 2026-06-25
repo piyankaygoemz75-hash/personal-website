@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人以沢坤 — 死文青·高达玩家·理想主义者</title>
+<meta name="description" content="人以沢坤的个人主页。诗人、经济学学生、UC高达Ver.Ka玩家、协同社会主义思考者。哈尔滨商业大学。">
+<meta property="og:title" content="人以沢坤 — 死文青·高达玩家·理想主义者">
+<meta property="og:description" content="一个学经济学的理想主义青年，喜欢高达和诗歌。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🐱</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+JP:wght@300;400;700&family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap');
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#08080c;--bg-card:#111118;--bg-card-hover:#181825;
+    --red:#c41e3a;--red-glow:#e63946;--red-wine:#722f37;
+    --gold:#c9a96e;--gold-dim:#8b7355;
+    --text:#c8c8d4;--text-dim:#7a7a90;--text-bright:#e8e8f4;
+    --border:#222230;--accent-blue:#569cd6;--accent-pink:#d46a8e;
+    --font-game:'Press Start 2P',monospace;
+    --font-tech:'Orbitron',sans-serif;
+    --font-body:'Noto Sans SC','Noto Sans JP','Microsoft YaHei','PingFang SC',sans-serif;
+    --font-serif:'Noto Serif SC','ZCOOL XiaoWei','SimSun','STSong',serif;
+    --font-hand:'Ma Shan Zheng','KaiTi','STKaiti',cursive;
+  }
+  html{scroll-behavior:smooth;width:100%;height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.8;overflow-x:hidden;width:100%;min-height:100vh;margin:0;padding:0}
+
+  /* ===== MOUSE TRAIL CANVAS ===== */
+  #mouseTrail{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+  /* ===== PETALS CANVAS ===== */
+  #petalsCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+  /* ===== NOISE ===== */
+  .noise{position:fixed;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:1}
+
+  /* ===== LAYOUT ===== */
+  .wrapper{position:relative;z-index:3;max-width:1000px;margin:0 auto;padding:0 24px}
+  .page{display:none}
+  .page.active{display:block}
+
+  /* ===== NAV ===== */
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,12,0.88);backdrop-filter:blur(16px);z-index:100}
+  .nav-logo{font-family:var(--font-tech);font-weight:900;font-size:1.2rem;color:var(--red-glow);letter-spacing:3px;text-shadow:0 0 16px rgba(230,57,70,0.35)}
+  .nav-links{display:flex;gap:32px;list-style:none}
+  .nav-links a,.nav-links button{color:var(--text-dim);text-decoration:none;font-size:1rem;letter-spacing:2px;transition:color 0.3s;background:none;border:none;cursor:pointer;font-family:var(--font-body);font-weight:700}
+  .nav-links a:hover,.nav-links button:hover{color:var(--red-glow)}
+
+  /* ===== HERO ===== */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 0}
+  .hero-avatar{width:120px;height:120px;border-radius:50%;border:2px solid var(--red-wine);box-shadow:0 0 40px rgba(196,30,58,0.2);margin-bottom:28px;background:linear-gradient(135deg,#1a1020,#101020);display:flex;align-items:center;justify-content:center;font-size:3.5rem;animation:avatar-glow 4s ease-in-out infinite}
+  @keyframes avatar-glow{0%,100%{box-shadow:0 0 40px rgba(196,30,58,0.2)}50%{box-shadow:0 0 60px rgba(196,30,58,0.4)}}
+  .hero-name{font-family:var(--font-serif);font-size:clamp(2.2rem,5vw,4rem);font-weight:900;color:var(--text-bright);letter-spacing:6px;margin-bottom:6px}
+  .hero-name span{display:inline-block;transition:transform 0.3s,color 0.3s}
+  .hero-name span:hover{transform:translateY(-4px);color:var(--red-glow)}
+  .hero-aka{font-size:0.85rem;color:var(--text-dim);margin-bottom:14px}
+  .hero-location{display:inline-flex;align-items:center;gap:6px;color:var(--text-dim);font-size:0.85rem;padding:5px 16px;border:1px solid var(--border);border-radius:16px}
+  .hero-tagline{margin-top:32px;font-family:var(--font-serif);font-size:clamp(0.95rem,1.8vw,1.2rem);color:var(--gold-dim);line-height:2.2}
+  .hero-tagline .lang{display:block;opacity:0.55;transition:opacity 0.3s}
+  .hero-tagline .lang:hover{opacity:1;color:var(--gold)}
+  .hero-stats{display:flex;gap:24px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+  .hero-stat{text-align:center}
+  .hero-stat-num{font-family:var(--font-tech);font-size:1.2rem;color:var(--red-glow)}
+  .hero-stat-label{font-size:0.7rem;color:var(--text-dim)}
+
+  /* ===== SECTION ===== */
+  .section{padding:80px 0}
+  .section-label{font-family:var(--font-tech);font-size:0.75rem;color:var(--red-glow);letter-spacing:3px;margin-bottom:6px}
+  .section-title{font-family:var(--font-serif);font-size:2rem;font-weight:700;color:var(--text-bright);margin-bottom:36px;display:flex;align-items:center;gap:14px}
+  .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--red-wine),transparent)}
+
+  /* ===== BIO ===== */
+  .bio-block p{color:var(--text-dim);max-width:650px;line-height:2.1;font-size:0.95rem}
+  .bio-block p+p{margin-top:12px}
+  .highlight-card{background:linear-gradient(135deg,rgba(196,30,58,0.08),rgba(196,30,58,0.01));border-left:3px solid var(--red);padding:24px 28px;margin:24px 0;border-radius:0 8px 8px 0;font-size:0.9rem;color:var(--text);line-height:1.9}
+
+  /* ===== STATS TABLE ===== */
+  .stat-table{width:100%;border-collapse:collapse;margin:16px 0 28px}
+  .stat-table th{text-align:left;padding:12px 16px;font-family:var(--font-tech);font-size:0.7rem;color:var(--red-glow);letter-spacing:2px;border-bottom:1px solid var(--red-wine)}
+  .stat-table td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:0.88rem}
+  .stat-table td:first-child{color:var(--text-bright);font-weight:700;white-space:nowrap}
+  .stat-table td:last-child{color:var(--text-dim)}
+  .stat-table tr:hover{background:var(--bg-card)}
+
+  /* ===== CARDS ===== */
+  .card-grid{display:grid;gap:14px}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px 24px;transition:all 0.3s}
+  .card:hover{border-color:var(--red-wine);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3)}
+  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+  .card-title{font-family:var(--font-serif);font-size:1.05rem;color:var(--text-bright);font-weight:700}
+  .card-date{font-family:var(--font-tech);font-size:0.6rem;color:var(--red-glow);letter-spacing:1px;white-space:nowrap}
+  .card-body{font-size:0.9rem;color:var(--text);line-height:1.9;white-space:pre-line}
+  .card-footer{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:0.75rem;color:var(--text-dim)}
+  .card-footer em{color:var(--gold-dim);font-style:normal}
+
+  /* ===== GUNPLA ===== */
+  .gunpla-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .gunpla-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all 0.3s}
+  .gunpla-card:hover{border-color:var(--accent-blue);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,0.4)}
+  .gunpla-img{height:160px;background:linear-gradient(135deg,var(--bg-card-hover),var(--bg-card));display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+  .gunpla-info{padding:18px}
+  .gunpla-name{font-family:var(--font-serif);font-size:1rem;color:var(--text-bright);font-weight:700}
+  .gunpla-meta{font-size:0.75rem;color:var(--text-dim);margin-top:4px}
+  .gunpla-grade{display:inline-block;padding:3px 10px;border-radius:12px;font-size:0.7rem;margin-top:8px;font-family:var(--font-tech);letter-spacing:1px}
+  .grade-mg{background:rgba(26,159,255,0.15);color:#1a9fff}
+  .grade-rg{background:rgba(251,114,153,0.15);color:#fb7299}
+  .grade-pg{background:rgba(201,169,110,0.15);color:var(--gold)}
+  .grade-hg{background:rgba(86,156,214,0.15);color:var(--accent-blue)}
+
+  /* ===== GAME ===== */
+  .game-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .game-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;gap:14px;align-items:center;transition:all 0.3s}
+  .game-card:hover{border-color:var(--red-wine);transform:translateX(4px)}
+  .game-icon{width:44px;height:44px;border-radius:8px;font-size:1.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .game-name{font-size:0.88rem;color:var(--text-bright);font-weight:700}
+  .game-meta{font-size:0.7rem;color:var(--text-dim);margin-top:2px}
+  .game-meta em{color:var(--gold);font-style:normal}
+
+  /* ===== FORM ===== */
+  .add-form{background:var(--bg-card);border:1px dashed var(--border);border-radius:10px;padding:24px;margin:32px 0;transition:border-color 0.3s}
+  .add-form:hover{border-color:var(--red-wine)}
+  .add-form h3{font-family:var(--font-tech);font-size:0.8rem;color:var(--gold);letter-spacing:2px;margin-bottom:16px}
+  .form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .form-row input,.form-row textarea,.form-row select{flex:1;min-width:150px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text-bright);font-family:var(--font-body);font-size:0.85rem;outline:none;transition:border-color 0.3s}
+  .form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--red-wine)}
+  .form-row textarea{min-height:80px;resize:vertical}
+  .btn{background:var(--red-wine);color:var(--text-bright);border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-family:var(--font-tech);font-size:0.75rem;letter-spacing:2px;transition:all 0.3s}
+  .btn:hover{background:var(--red-glow);box-shadow:0 0 20px rgba(230,57,70,0.3)}
+  .btn-sm{background:var(--bg-card);border:1px solid var(--border);color:var(--text-dim);padding:4px 12px;border-radius:4px;cursor:pointer;font-size:0.7rem;transition:all 0.3s}
+  .btn-sm:hover{border-color:var(--red);color:var(--red-glow)}
+  .delete-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.8rem;padding:2px 6px;transition:color 0.3s}
+  .delete-btn:hover{color:var(--red-glow)}
+
+  /* ===== TAGS ===== */
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+  .tag{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:0.75rem;color:var(--text-dim);transition:all 0.3s}
+  .tag:hover{border-color:var(--red);color:var(--red-glow)}
+
+  /* ===== LINKS ===== */
+  .link-row{display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;font-size:0.9rem;transition:all 0.3s}
+  .link-row:hover{border-color:var(--red-wine)}
+  .link-row .icon{font-size:1.3rem;flex-shrink:0}
+  .link-row .label{color:var(--text-bright);font-weight:700;flex-shrink:0}
+  .link-row .value{color:var(--text-dim)}
+
+  /* ===== QUOTE ===== */
+  .quote-block{background:linear-gradient(135deg,rgba(196,30,58,0.08),rgba(196,30,58,0.01));border-left:3px solid var(--red);padding:24px 32px;margin:24px 0;border-radius:0 8px 8px 0;position:relative}
+  .quote-block::before{content:'\201C';position:absolute;top:-8px;left:10px;font-family:var(--font-serif);font-size:4rem;color:rgba(196,30,58,0.12)}
+  .quote-text{font-family:var(--font-serif);font-style:italic;font-size:0.95rem;color:var(--text-bright);line-height:2}
+  .quote-source{margin-top:8px;font-size:0.75rem;color:var(--text-dim);text-align:right}
+
+  /* ===== FOOTER ===== */
+  .footer{text-align:center;padding:50px 0 36px;border-top:1px solid var(--border);margin-top:40px}
+  .footer-poem{font-family:var(--font-serif);color:var(--text-dim);font-size:0.82rem;opacity:0.5;line-height:2;margin-bottom:14px}
+  .footer-text{font-size:0.68rem;color:var(--text-dim)}
+
+  /* ===== REVEAL ===== */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease-out,transform 0.7s ease-out}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:768px){.nav-links{gap:12px}.nav-links a,.nav-links button{font-size:0.7rem}.card{padding:16px}.gunpla-grid{grid-template-columns:1fr}}
+  @media(max-width:480px){.nav{flex-direction:column;gap:10px}.hero{min-height:80vh}}
+
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--red-wine)}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<canvas id="petalsCanvas"></canvas>
+<canvas id="mouseTrail"></canvas>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">SIZEKUN_沢坤</div>
+  <ul class="nav-links">
+    <li><button data-page="home">首页</button></li>
+    <li><button data-page="poetry">诗歌</button></li>
+    <li><button data-page="gunpla">高达</button></li>
+    <li><button data-page="profile">数据</button></li>
+    <li><button data-page="links">联系</button></li>
+  </ul>
+</nav>
+
+<div class="wrapper">
+
+  <!-- ==================== HOME PAGE ==================== -->
+  <div class="page active" id="page-home">
+    <section class="hero" id="home">
+      <div class="hero-avatar"><img src="avatar.jpg" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+      <h1 class="hero-name"><span>人</span><span>以</span><span>沢</span><span>坤</span></h1>
+      <div class="hero-aka">佀骛罶祺 · スたくくん · Nini Takukon · sizekun</div>
+      <div class="hero-location">❄️ Harbin, Heilongjiang · 哈尔滨商业大学 · 经济学</div>
+      <div class="hero-tagline">
+        <span class="lang">你是谁？</span>
+        <span class="lang">君は誰だって?</span>
+        <span class="lang">너 누구예요?</span>
+        <span class="lang">Who are you?</span>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-label">// ABOUT</div>
+      <h2 class="section-title">关于我</h2>
+      <div class="bio-block">
+        <p>
+          一个学经济学的理想主义青年，生活在冰城哈尔滨。190cm的身高让人无法忽视，但内心住着一个敏感的死文青。
+        </p>
+        <p>
+          喜欢高达和诗歌，习惯用理性分析世界，却始终保留着对人与人之间情感连接的重视。
+          对社会公平有强烈关注，对亲密关系认真投入，对技术和思想充满好奇，
+          同时带着一点UC高达式的浪漫与忧郁。
+        </p>
+        <p>
+          目前就读于<span style="color:var(--text-bright);">经济学专业</span>，计划跨考<span style="color:var(--text-bright);">马克思主义哲学</span>硕士。
+          具备<span style="color:var(--text-bright);">日语N2</span>精读能力，能直接啃原版高达设定集和设计师访谈。
+        </p>
+      </div>
+
+      <div class="highlight-card">
+        <strong>✨ GPT 眼中的我：</strong><br>
+        「一个兼具严谨思辨力与硬核匠人精神的青年。既能坐在书桌前用经济学和哲学模型去解构宏大的社会机器，
+        也能在工作台前拿着刻线刀、对照着日文设定集去打磨一台高达的骨架。
+        对秩序、机械逻辑和宏大叙事的审美，构成了精神世界的核心支撑。」
+      </div>
+
+      <div class="highlight-card">
+        <strong>🔴 审美关键词：</strong>"带有悲剧感的理想主义"<br>
+        高达 · 魂like · 重工业美学 · 废弃工厂 · 搁浅的巨轮 · 渴望丢失的爱 · 国际歌
+      </div>
+
+      <div class="tags">
+        <span class="tag">📚 经济学</span><span class="tag">🔬 马哲</span><span class="tag">🇯🇵 N2</span>
+        <span class="tag">🤖 高达UC/Ver.Ka</span><span class="tag">🎮 单机游戏</span>
+        <span class="tag">✍️ 诗歌</span><span class="tag">☭ 左翼</span>
+        <span class="tag">🐱 猫奴</span><span class="tag">🏭 工业美学</span>
+        <span class="tag">📐 190cm</span><span class="tag">☕ 咖啡</span>
+              </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-label">// POLITICS</div>
+      <h2 class="section-title">我的思想定位</h2>
+      <div class="highlight-card">
+        <strong>🔴 定位：平等主义左翼</strong><br>
+        新左派 + 民主社会主义倾向 + 马克思主义爱好者。<br>
+        关注社会公平、阶级差异、劳动价值、权力结构、人的异化、集体利益。<br>
+        相比于财富和成功，更在意：<span style="color:var(--text-bright);">一个社会是否让普通人过得有尊严。</span>
+      </div>
+      <p style="color:var(--text-dim);line-height:2;max-width:700px;margin-top:16px;">
+        对资本主义并非完全否定，但对资本无序扩张、财富集中、个人崇拜等现象天然警惕。
+        理想上支持平等和解放，现实上承认人性的复杂——"权力欲确实存在，但并非所有人都追求权力"。
+        这种既相信理想又承认现实的思考方式，比单纯站队更成熟。
+      </p>
+      <p style="color:var(--text-dim);line-height:2;max-width:700px;margin-top:12px;">
+        经济学训练留下了严谨的制度建模思维，但并未满足于纯粹的西方经济学框架。
+        计划跨考<span style="color:var(--text-bright);">马克思主义哲学</span>硕士，试图在更宏大的历史唯物主义视角下寻求答案。
+      </p>
+      <div class="quote-block" style="margin-top:20px;">
+        <div class="quote-text">C'est la lutte finale<br>Groupons-nous, et demain<br>L'Internationale<br>Sera le genre humain.</div>
+        <div class="quote-source">— L'Internationale · Steam 个人简介</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div class="footer-poem">我就想当个死文清<br>在游戏与现实的交界处<br>找到属于自己的世界</div>
+      <div class="footer-text">🐱 人以沢坤 © 2025 · Harbin, China · 哈尔滨商业大学 · 12.26 🎂</div>
+    </div>
+  </div>
+
+  <!-- ==================== POETRY PAGE ==================== -->
+  <div class="page" id="page-poetry">
+    <section class="section">
+      <div class="section-label">// POETRY</div>
+      <h2 class="section-title">我是死文青</h2>
+      <p style="color:var(--text-dim);margin-bottom:32px;">这里是一些诗歌的选集——以及一个可以继续写下去的角落。</p>
+
+      <div class="card-grid" id="poemList"></div>
+
+      <!-- ADD POEM FORM -->
+      <div class="add-form">
+        <h3>+ 新增诗歌</h3>
+        <div class="form-row">
+          <input type="text" id="poemDate" placeholder="日期 (如 2025.06.25)">
+          <input type="text" id="poemDevice" placeholder="设备 (如 荣耀90)">
+        </div>
+        <div class="form-row">
+          <textarea id="poemText" placeholder="在这里写下你的诗..."></textarea>
+        </div>
+        <div class="form-row">
+          <input type="text" id="poemComment" placeholder="朋友的评论 (可选)">
+        </div>
+        <button class="btn" onclick="addPoem()">发布诗歌</button>
+      </div>
+    </section>
+    <div class="footer">
+      <div class="footer-poem">近视的我 在地球黑夜与白昼的背面<br>摸索着我丢失了一半的眼镜片</div>
+      <div class="footer-text">🐱 人以沢坤 · 诗歌角落</div>
+    </div>
+  </div>
+
+  <!-- ==================== GUNPLA PAGE ==================== -->
+  <div class="page" id="page-gunpla">
+    <section class="section">
+      <div class="section-label">// GUNPLA</div>
+      <h2 class="section-title">高达模型收藏</h2>
+      <p style="color:var(--text-dim);margin-bottom:32px;">
+        UC宇宙世纪 · Ver.Ka 设计 · 绝非盲目跟风的素组玩家<br>
+        对机体内部骨架结构、机械合理性有极高的要求。日语N2，直接啃原版日文设定集。
+      </p>
+
+      <div class="gunpla-grid" id="gunplaList"></div>
+
+      <!-- ADD GUNPLA FORM -->
+      <div class="add-form">
+        <h3>+ 新增模型</h3>
+        <div class="form-row">
+          <input type="text" id="gunplaName" placeholder="机体名称 (如 MG 全装甲ZZ高达 Ver.Ka)">
+          <select id="gunplaGrade">
+            <option value="PG">PG (Perfect Grade)</option>
+            <option value="MG" selected>MG (Master Grade)</option>
+            <option value="RG">RG (Real Grade)</option>
+            <option value="HG">HG (High Grade)</option>
+            <option value="SD">SD (Super Deformed)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input type="text" id="gunplaSeries" placeholder="系列/世界观 (如 UC 0088)">
+          <input type="text" id="gunplaStatus" placeholder="状态 (如 已完工 / 制作中 / 堆积中)">
+        </div>
+        <div class="form-row">
+          <textarea id="gunplaNote" placeholder="制作笔记、改造细节、感想..."></textarea>
+        </div>
+        <button class="btn" onclick="addGunpla()">添加模型</button>
+      </div>
+    </section>
+    <div class="footer">
+      <div class="footer-poem">在工作台前拿着刻线刀<br>对照着日文设定集<br>打磨一台高达的骨架</div>
+      <div class="footer-text">🤖 UC · Ver.Ka · Gunpla Collection</div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE PAGE ==================== -->
+  <div class="page" id="page-profile">
+    <section class="section">
+      <div class="section-label">// STEAM</div>
+      <h2 class="section-title">Steam 游戏</h2>
+      <table class="stat-table">
+        <tr><td>等级</td><td style="color:var(--red-glow);">Lv. 27</td></tr>
+        <tr><td>游戏收藏</td><td style="color:var(--text-bright);">837 款</td></tr>
+        <tr><td>近两周游戏时间</td><td style="color:var(--red-glow);">688.6 小时</td></tr>
+        <tr><td>截图</td><td style="color:var(--gold);">876 张</td></tr>
+        <tr><td>评测</td><td>22 篇</td></tr>
+        <tr><td>好友</td><td style="color:var(--gold);">149 人</td></tr>
+        <tr><td>徽章</td><td style="color:var(--gold);">39 枚 (含500+收藏家)</td></tr>
+        <tr><td>会员年限</td><td>3+ 年</td></tr>
+      </table>
+
+      <h3 style="font-family:var(--font-tech);font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px;">最近游玩</h3>
+      <div class="game-list">
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e)">🛡️</div>
+          <div><div class="game-name">Legend of Keepers</div><div class="game-meta">Roguelite · <em>9.6h</em></div></div>
+        </div>
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#0a0a0a,#1a1a2e)">📖</div>
+          <div><div class="game-name">Black Book</div><div class="game-meta">RPG · 斯拉夫传说 · <em>4.2h</em></div></div>
+        </div>
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#0a1a0a,#1a2e1a)">🃏</div>
+          <div><div class="game-name">Foretales</div><div class="game-meta">叙事冒险 · <em>6.4h</em></div></div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding:14px 18px;background:var(--bg-card);border-radius:6px;border:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text-dim);">
+        🎯 随性探索者 — 不在意成就，只在意过程。偏好世界观宏大、文本深厚的沉浸式游戏：生化危机系列、魂like、怪物猎人。
+      </div>
+
+      <div class="tags" style="margin-top:12px;">
+        <span class="tag">🎮 PC Gamer · 471K</span>
+        <span class="tag">📊 SteamDB · 246K</span>
+        <span class="tag" style="border-color:var(--red-wine);color:var(--red-glow)">☭ 中国共产党 · 12.6K</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-label">// BILIBILI</div>
+      <h2 class="section-title">Bilibili</h2>
+      <table class="stat-table">
+        <tr><td>关注</td><td>2,007</td></tr>
+        <tr><td>粉丝</td><td style="color:var(--red-glow);">75</td></tr>
+        <tr><td>投稿</td><td>22 个视频</td></tr>
+        <tr><td>追番</td><td style="color:var(--red-glow);">44 部</td></tr>
+        <tr><td>收藏夹</td><td style="color:var(--gold);">7 个 (2,283+ 视频)</td></tr>
+      </table>
+
+      <h3 style="font-family:var(--font-tech);font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px;">最近玩过</h3>
+      <div class="game-list">
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#2a1a0a,#4e2d1b)">🏛️</div>
+          <div><div class="game-name">大周列国志</div><div class="game-meta">策略 · <em>8.3分</em></div></div>
+        </div>
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#0a1a1a,#1b3d3d)">⚔️</div>
+          <div><div class="game-name">重生细胞</div><div class="game-meta">Roguelite · <em>7.1分</em></div></div>
+        </div>
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#1a1a0a,#3d3d1b)">🔫</div>
+          <div><div class="game-name">元气骑士</div><div class="game-meta">Roguelike · <em>7.9分</em></div></div>
+        </div>
+        <div class="game-card">
+          <div class="game-icon" style="background:linear-gradient(135deg,#0a1a2a,#1b2e4e)">🇨🇳</div>
+          <div><div class="game-name">无悔华夏</div><div class="game-meta">历史策略 · <em>8.0分</em></div></div>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-tech);font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;margin:20px 0 8px;">收藏夹</h3>
+      <div class="tags">
+        <span class="tag">📁 默认收藏夹 · 2,283</span><span class="tag">📚 学习 · 42</span>
+        <span class="tag">🎮 游戏 · 30</span><span class="tag">🐱 猫猫 · 24</span>
+        <span class="tag">📖 真学习 · 19</span><span class="tag">🎀 奇卡哇 · 36</span>
+        <span class="tag">🎵 歌曲 · 3</span>
+      </div>
+
+      <h3 style="font-family:var(--font-tech);font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;margin:20px 0 8px;">追番精选</h3>
+      <div class="tags">
+        <span class="tag">🧪 Dr.STONE 石纪元 · 全四季</span>
+        <span class="tag">🤖 机动战士高达SEED HD · 48话</span>
+        <span class="tag">🍜 我是不白吃 · 1043话+</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-label">// PSN</div>
+      <h2 class="section-title">PlayStation</h2>
+      <table class="stat-table">
+        <tr><td>PSN ID</td><td style="color:var(--text-bright);">ninitakukun</td></tr>
+        <tr><td>区服</td><td>HK</td></tr>
+        <tr><td>等级</td><td style="color:var(--red-glow);">Lv. 46</td></tr>
+        <tr><td>游戏总数</td><td style="color:var(--text-bright);">46 款</td></tr>
+        <tr><td>总时长</td><td>181 小时</td></tr>
+        <tr><td>完成率</td><td>5.79%</td></tr>
+        <tr><td>总奖杯</td><td style="color:var(--gold);">142</td></tr>
+        <tr><td>🏆 金 / 🥈 银 / 🥉 铜</td><td>5 / 14 / 123</td></tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <div class="section-label">// XBOX</div>
+      <h2 class="section-title">Xbox</h2>
+      <table class="stat-table">
+        <tr><td>Gamertag</td><td style="color:var(--text-bright);">Sizekun</td></tr>
+        <tr><td>游戏数量</td><td style="color:var(--text-bright);">220 款</td></tr>
+        <tr><td>成就点数</td><td style="color:var(--gold);">30,221</td></tr>
+        <tr><td>好友排名</td><td style="color:var(--red-glow);">#1</td></tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <div class="section-label">// DOUYIN</div>
+      <h2 class="section-title">抖音</h2>
+      <table class="stat-table">
+        <tr><td>用户名</td><td style="color:var(--text-bright);">佀骛罶祺</td></tr>
+        <tr><td>粉丝</td><td>38</td></tr>
+        <tr><td>获赞</td><td style="color:var(--red-glow);">97</td></tr>
+        <tr><td>互关</td><td>38</td></tr>
+        <tr><td>位置</td><td>黑龙江 · 哈尔滨</td></tr>
+        <tr><td>年龄</td><td>21 岁 · 男</td></tr>
+      </table>
+    </section>
+
+    <div class="footer">
+      <div class="footer-text">🎮 Steam Lv.27 · 📺 Bilibili · 🎮 PSN · Xbox · 12.26 🎂</div>
+    </div>
+  </div>
+
+  <!-- ==================== LINKS PAGE ==================== -->
+  <div class="page" id="page-links">
+    <section class="section">
+      <div class="section-label">// LINKS</div>
+      <h2 class="section-title">联系方式</h2>
+
+      <div class="link-row">
+        <span class="icon">🎮</span>
+        <span class="label">Steam</span>
+        <span class="value">人以沢坤 · 837游戏 · Lv.27</span>
+        <a href="https://steamcommunity.com/id/ninitakukuninharbin/" target="_blank" style="margin-left:auto;color:var(--accent-blue);text-decoration:none;font-size:0.8rem;">打开 →</a>
+      </div>
+
+      <div class="link-row">
+        <span class="icon">📺</span>
+        <span class="label">Bilibili</span>
+        <span class="value">佀骛罶祺 · 22投稿 · 75粉丝</span>
+        <a href="https://space.bilibili.com/629448476" target="_blank" style="margin-left:auto;color:#fb7299;text-decoration:none;font-size:0.8rem;">打开 →</a>
+      </div>
+
+      <div class="link-row">
+        <span class="icon">𝕏</span>
+        <span class="label">Twitter / X</span>
+        <span class="value">@sizekun193686 · Nini Takukon · 172帖</span>
+        <a href="https://x.com/sizekun193686" target="_blank" style="margin-left:auto;color:var(--text-dim);text-decoration:none;font-size:0.8rem;">打开 →</a>
+      </div>
+
+      <div class="link-row">
+        <span class="icon">🐧</span>
+        <span class="label">QQ</span>
+        <span class="value">364976447</span>
+        <button class="btn-sm" onclick="navigator.clipboard.writeText('364976447')" style="margin-left:auto;">复制</button>
+      </div>
+
+      <div class="link-row">
+        <span class="icon">📞</span>
+        <span class="label">电话</span>
+        <span class="value">+86 18035331226</span>
+        <button class="btn-sm" onclick="navigator.clipboard.writeText('+8618035331226')" style="margin-left:auto;">复制</button>
+      </div>
+
+      <div class="link-row">
+        <span class="icon">✉️</span>
+        <span class="label">邮箱</span>
+        <span class="value">18035331226@163.com</span>
+        <button class="btn-sm" onclick="navigator.clipboard.writeText('18035331226@163.com')" style="margin-left:auto;">复制</button>
+      </div>
+    </section>
+
+    <div class="footer">
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== PAGE ROUTING =====
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Re-observe reveal elements
+    setTimeout(() => {
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    }, 100);
+    // Render dynamic content
+    if (name === 'poetry') renderPoems();
+    if (name === 'gunpla') renderGunpla();
+  }
+
+  // ===== SCROLL REVEAL =====
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ===== MOUSE TRAIL =====
+  const trailCanvas = document.getElementById('mouseTrail');
+  const tctx = trailCanvas.getContext('2d');
+  let trailW, trailH;
+  function resizeTrail() { trailW = trailCanvas.width = document.documentElement.clientWidth; trailH = trailCanvas.height = document.documentElement.clientHeight; }
+  resizeTrail(); window.addEventListener('resize', resizeTrail); window.addEventListener('orientationchange', () => setTimeout(resizeTrail, 100));
+
+  const trailPoints = [];
+  const MAX_TRAIL = 40;
+
+  document.addEventListener('mousemove', e => {
+    trailPoints.push({ x: e.clientX, y: e.clientY, a: 0.9, r: Math.random() * 2 + 1 });
+    if (trailPoints.length > MAX_TRAIL) trailPoints.shift();
+  });
+
+  function drawTrail() {
+    tctx.clearRect(0, 0, trailW, trailH);
+    for (let i = 0; i < trailPoints.length; i++) {
+      const p = trailPoints[i];
+      p.a -= 0.015;
+      if (p.a <= 0) continue;
+      tctx.beginPath();
+      tctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      tctx.fillStyle = `rgba(230,57,70,${p.a * 0.5})`;
+      tctx.fill();
+      // Glow
+      tctx.beginPath();
+      tctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+      tctx.fillStyle = `rgba(230,57,70,${p.a * 0.1})`;
+      tctx.fill();
+    }
+    trailPoints.forEach(p => p.a -= 0.01);
+    // Remove dead points
+    for (let i = trailPoints.length - 1; i >= 0; i--) {
+      if (trailPoints[i].a <= 0) trailPoints.splice(i, 1);
+    }
+    requestAnimationFrame(drawTrail);
+  }
+  drawTrail();
+
+  // ===== FALLING PETALS =====
+  const petalCanvas = document.getElementById('petalsCanvas');
+  const pctx = petalCanvas.getContext('2d');
+  let petalW, petalH;
+  function resizePetals() { petalW = petalCanvas.width = document.documentElement.clientWidth; petalH = petalCanvas.height = document.documentElement.clientHeight; }
+  resizePetals(); window.addEventListener('resize', resizePetals); window.addEventListener('orientationchange', () => setTimeout(resizePetals, 100));
+
+  const petals = [];
+  const PETAL_COUNT = 35;
+
+  class Petal {
+    constructor() {
+      this.reset(true);
+    }
+    reset(init) {
+      this.x = Math.random() * petalW;
+      this.y = init ? Math.random() * petalH : -20;
+      this.size = Math.random() * 12 + 6;
+      this.speedY = Math.random() * 0.6 + 0.2;
+      this.speedX = Math.random() * 0.4 - 0.2;
+      this.rotation = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.02;
+      this.opacity = Math.random() * 0.35 + 0.08;
+      this.color = Math.random() > 0.5 ? 'rgba(212,106,142,' : 'rgba(255,182,193,';
+      this.wobble = Math.random() * 2;
+      this.wobbleSpeed = Math.random() * 0.01 + 0.005;
+      this.wobbleOffset = Math.random() * Math.PI * 2;
+    }
+    update() {
+      this.y += this.speedY;
+      this.x += this.speedX + Math.sin(this.wobbleOffset) * this.wobble;
+      this.wobbleOffset += this.wobbleSpeed;
+      this.rotation += this.rotSpeed;
+      if (this.y > petalH + 30) this.reset(false);
+      if (this.x > petalW + 30) this.x = -30;
+      if (this.x < -30) this.x = petalW + 30;
+    }
+    draw(ctx) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      ctx.beginPath();
+      // Draw a simple petal shape (ellipse)
+      ctx.ellipse(0, 0, this.size * 0.6, this.size * 0.3, 0, 0, Math.PI * 2);
+      ctx.fillStyle = this.color + this.opacity + ')';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  for (let i = 0; i < PETAL_COUNT; i++) petals.push(new Petal());
+
+  function drawPetals() {
+    pctx.clearRect(0, 0, petalW, petalH);
+    petals.forEach(p => { p.update(); p.draw(pctx); });
+    requestAnimationFrame(drawPetals);
+  }
+  drawPetals();
+
+  // ===== POETRY DATA =====
+  const defaultPoems = [
+    { date: '2024.12.06', device: '荣耀90', text: '寒风把空气冻成了冰块\n冰块把月光过滤的只剩忧愁\n忧愁漫过了天幕的群山与森林\n群山与深林\n沉浸在了淡蓝色的海洋', comment: '' },
+    { date: '2024.11.17', device: '荣耀90', text: '死本身就是衰落的为什么还要衰落\n生本身就是迸发的为什么还要迸发\n啊？啊。\n原来是这个\n苦寒之地啊。\n哭喊之底啊？', comment: '柯柯祝你天天开心 — wike' },
+    { date: '2024.11.17', device: '荣耀90', text: '如果一个人真的能抛下他的所爱之人和爱己之人，\n那他就去死吧', comment: '不是哥们 — 起个名字好费劲' },
+    { date: '2024.11.09', device: '荣耀90', text: '没见过光明，便能忍受光明？\n没见过黑暗，就想逃离光明？', comment: '' },
+    { date: '2024.07.28', device: '荣耀90', text: '我想要站在珠穆朗玛峰也未企及的高度上\n站在翻腾着涌动着的云海上\n站在明与暗沸腾的混沌上\n站在刺破这天幕的黄金剑刃上\n起跳\n向着那持剑的红颜起跳\n然后幸福地\n跌入那坚实\n而又在我眼中渐渐模糊的怀抱', comment: '好的怀抱哥 — 两块8毛8 · 壮美啊 — 剑胆成灰' },
+    { date: '2024.09.25', device: '荣耀90', text: '近视的我\n在地球黑夜的背面\n在地球白昼的背面\n摸索着\n摸索着我丢失了一半的\n眼镜片', comment: '' },
+    { date: '2024.09.23', device: '荣耀90', text: '我的心中没有那只猛虎\n我只想要细细地欣赏蔷薇的气息', comment: '' },
+    { date: '2024.08.25', device: '荣耀90', text: '我要闭上了眼睛\n看着不透光的眼帘\n看着黑暗\n直到\n再也不能意识到\n我依然还在看着这一片的黑暗', comment: '多了，眼前发黑还不严重啊 — 森林冰火人（火）' },
+    { date: '2024.10.07', device: '荣耀90', text: '为什么和有的人交流这么累呢。。。\n要是所有人都是小猫多好啊 🐱', comment: '我是小猫 🐱 — ccqq · 小猫亲亲 🐱' },
+    { date: '2024.08.01', device: '荣耀90', text: '我问神，不抵抗也是一种罪过吗', comment: '求翻译 — 当昨天已成往事' },
+    { date: '2024.07.10', device: '荣耀90', text: '那年冬天 我对你说\n我有一句忘却的诗？\n春雨的暮 细细地织就了窗上的雾\n窗上的雾 遗失了窗外的楼台和草树\n楼台和草树 揉碎在了霓虹与流光的漫溯', comment: '写的好好…小诗人 — lleba · カナシ' },
+    { date: '2024.07.09', device: '荣耀90', text: '今天的早饭 是抿曲和油条\n我夹起了他们\n透过悄悄的平凡\n看到了镀金的时代\n和雾中模糊的世间', comment: '高中时候写的 🐱' },
+    { date: '2024.07.04', device: '荣耀90', text: '才华横溢救不了中国但能救自己，满腹经纶不能指点江山但能让老板安心的品着茶茗。\n当他为资本家竭尽全力辩解的时候，他会不会想起，把自己的梦想向天空呼喊的那个童年的午后？', comment: '' },
+    { date: '2024.07.04', device: '荣耀90', text: '你永远不能强制一个不喜欢学习的人把学习当成兴趣…在你进入那个模具的时候，你的梦想，也悄悄地怦然落地了…不知道什么时候，我的心里就已经默认了：我的人生，就应该站在土黄色的太阳下，抚摸着人们口中略带嘲讽的一亩三分地。', comment: '🌾 — 当昨天已成往事' },
+    { date: '2024.09.28', device: '荣耀90', text: '我就想当个死文清\n（死文青还打错字了\n我这些东西微信都不敢发啊喂）', comment: '' },
+  ];
+
+  function loadPoems() {
+    const saved = localStorage.getItem('sizekun_poems');
+    return saved ? JSON.parse(saved) : [...defaultPoems];
+  }
+  function savePoems(poems) { localStorage.setItem('sizekun_poems', JSON.stringify(poems)); }
+
+  function renderPoems() {
+    const poems = loadPoems();
+    const container = document.getElementById('poemList');
+    container.innerHTML = poems.map((p, i) => `
+      <div class="card reveal">
+        <div class="card-header">
+          <span class="card-date">${p.date} · ${p.device}</span>
+          <button class="delete-btn" onclick="deletePoem(${i})" title="删除">✕</button>
+        </div>
+        <div class="card-body">${p.text}</div>
+        ${p.comment ? `<div class="card-footer"><em>${p.comment}</em></div>` : ''}
+      </div>
+    `).join('');
+    // Re-observe
+    document.querySelectorAll('#poemList .reveal').forEach(el => obs.observe(el));
+  }
+
+  function addPoem() {
+    const date = document.getElementById('poemDate').value.trim();
+    const device = document.getElementById('poemDevice').value.trim();
+    const text = document.getElementById('poemText').value.trim();
+    const comment = document.getElementById('poemComment').value.trim();
+    if (!text) { alert('请至少写下诗句内容'); return; }
+    const poems = loadPoems();
+    poems.unshift({
+      date: date || new Date().toISOString().slice(0,10).replace(/-/g,'.'),
+      device: device || '手机',
+      text, comment
+    });
+    savePoems(poems);
+    renderPoems();
+    document.getElementById('poemDate').value = '';
+    document.getElementById('poemDevice').value = '';
+    document.getElementById('poemText').value = '';
+    document.getElementById('poemComment').value = '';
+  }
+
+  function deletePoem(index) {
+    if (!confirm('确定删除这首诗吗？')) return;
+    const poems = loadPoems();
+    poems.splice(index, 1);
+    savePoems(poems);
+    renderPoems();
+  }
+
+  // ===== GUNPLA DATA =====
+  const defaultGunpla = [
+    { name: 'FAZZ 全装甲ZZ高达 Ver.Ka', grade: 'MG', series: 'UC 0088', status: '已完工 · 深入拆解', note: 'Ver.Ka 标志性设计，复杂的装甲层次结构和变形机构。深入拆解研究了内部骨架的机械逻辑。日语原版说明书精读。' },
+    { name: '丘贝雷', grade: 'MG', series: 'UC 0087', status: '已完工 · 深入拆解', note: '哈曼·卡恩的座机。独特的漏斗设计和流线型装甲。对机体内部结构进行了详细分析。' },
+  ];
+
+  function loadGunpla() {
+    const saved = localStorage.getItem('sizekun_gunpla');
+    return saved ? JSON.parse(saved) : [...defaultGunpla];
+  }
+  function saveGunpla(list) { localStorage.setItem('sizekun_gunpla', JSON.stringify(list)); }
+
+  const gradeIcons = { PG: '👑', MG: '🤖', RG: '⚙️', HG: '🔧', SD: '🧸' };
+  const gradeClass = { PG: 'grade-pg', MG: 'grade-mg', RG: 'grade-rg', HG: 'grade-hg', SD: 'grade-hg' };
+
+  function renderGunpla() {
+    const list = loadGunpla();
+    const container = document.getElementById('gunplaList');
+    container.innerHTML = list.map((g, i) => `
+      <div class="gunpla-card reveal">
+        <div class="gunpla-img">${gradeIcons[g.grade] || '🤖'}</div>
+        <div class="gunpla-info">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div class="gunpla-name">${g.name}</div>
+            <button class="delete-btn" onclick="deleteGunpla(${i})" title="删除">✕</button>
+          </div>
+          <div class="gunpla-meta">${g.series} · ${g.status}</div>
+          <span class="gunpla-grade ${gradeClass[g.grade] || 'grade-mg'}">${g.grade}</span>
+          ${g.note ? `<div style="font-size:0.8rem;color:var(--text-dim);margin-top:8px;line-height:1.7;">${g.note}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('#gunplaList .reveal').forEach(el => obs.observe(el));
+  }
+
+  function addGunpla() {
+    const name = document.getElementById('gunplaName').value.trim();
+    const grade = document.getElementById('gunplaGrade').value;
+    const series = document.getElementById('gunplaSeries').value.trim();
+    const status = document.getElementById('gunplaStatus').value.trim();
+    const note = document.getElementById('gunplaNote').value.trim();
+    if (!name) { alert('请输入机体名称'); return; }
+    const list = loadGunpla();
+    list.unshift({ name, grade, series: series || 'UC', status: status || '收藏中', note });
+    saveGunpla(list);
+    renderGunpla();
+    document.getElementById('gunplaName').value = '';
+    document.getElementById('gunplaSeries').value = '';
+    document.getElementById('gunplaStatus').value = '';
+    document.getElementById('gunplaNote').value = '';
+  }
+
+  function deleteGunpla(index) {
+    if (!confirm('确定删除这个模型吗？')) return;
+    const list = loadGunpla();
+    list.splice(index, 1);
+    saveGunpla(list);
+    renderGunpla();
+  }
+
+  // ===== INIT =====
+  // Bind nav buttons
+  document.querySelectorAll('.nav-links button[data-page]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      showPage(this.getAttribute('data-page'));
+    });
+  });
+  console.log('🐱 人以沢坤 · 死文青 · 高达玩家 · 理想主义者');
+  console.log('📐 190cm · 🎓 哈商大经济学 · 🇯🇵 N2 · 🤖 UC Ver.Ka');
+</script>
+</body>
+</html>
