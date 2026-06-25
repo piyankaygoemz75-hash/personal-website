@@ -653,25 +653,7 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ===== SUPABASE =====
-  const SUPABASE_URL = 'https://usvejbvhhxrupwpgiuww.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_ldPHDqi4Rx9D1zktaTbqEA_VmqpsNp1';
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const ADMIN_PW_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA256('admin123')
-  let adminVerified = false;
-
-  async function checkAdmin() {
-    if (adminVerified) return true;
-    const pw = prompt('请输入管理密码：');
-    if (!pw) return false;
-    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-    const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-    if (hashHex === ADMIN_PW_HASH) { adminVerified = true; return true; }
-    alert('密码错误'); return false;
-  }
-
   // ===== PAGE ROUTING =====
   function showPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -811,40 +793,43 @@
     { date: '2024.09.28', device: '荣耀90', text: '我就想当个死文清\n（死文青还打错字了\n我这些东西微信都不敢发啊喂）', comment: '' },
   ];
 
-  async function loadPoems() {
-    const { data } = await db.from('poems').select('*').order('id', { ascending: false });
-    return (data && data.length) ? data : [...defaultPoems];
+  function loadPoems() {
+    const saved = localStorage.getItem('sizekun_poems');
+    return saved ? JSON.parse(saved) : [...defaultPoems];
   }
+  function savePoems(poems) { localStorage.setItem('sizekun_poems', JSON.stringify(poems)); }
 
-  async function renderPoems() {
-    document.getElementById('poemList').innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px;">加载中...</p>';
-    const poems = await loadPoems();
+  function renderPoems() {
+    const poems = loadPoems();
     const container = document.getElementById('poemList');
-    container.innerHTML = poems.map((p) => `
+    container.innerHTML = poems.map((p, i) => `
       <div class="card reveal">
         <div class="card-header">
           <span class="card-date">${p.date} · ${p.device}</span>
-          ${p.id ? `<button class="delete-btn" onclick="deletePoem(${p.id})" title="删除">✕</button>` : ''}
+          <button class="feed-export" onclick="exportItem('sizekun_poems',${i})">导出</button>
+          <button class="delete-btn" onclick="deletePoem(${i})" title="删除">✕</button>
         </div>
         <div class="card-body">${p.text}</div>
         ${p.comment ? `<div class="card-footer"><em>${p.comment}</em></div>` : ''}
       </div>
     `).join('');
+    // Re-observe
     document.querySelectorAll('#poemList .reveal').forEach(el => obs.observe(el));
   }
 
-  async function addPoem() {
-    if (!await checkAdmin()) return;
+  function addPoem() {
     const date = document.getElementById('poemDate').value.trim();
     const device = document.getElementById('poemDevice').value.trim();
     const text = document.getElementById('poemText').value.trim();
     const comment = document.getElementById('poemComment').value.trim();
     if (!text) { alert('请至少写下诗句内容'); return; }
-    await db.from('poems').insert({
+    const poems = loadPoems();
+    poems.unshift({
       date: date || new Date().toISOString().slice(0,10).replace(/-/g,'.'),
       device: device || '手机',
       text, comment
     });
+    savePoems(poems);
     renderPoems();
     document.getElementById('poemDate').value = '';
     document.getElementById('poemDevice').value = '';
@@ -852,10 +837,11 @@
     document.getElementById('poemComment').value = '';
   }
 
-  async function deletePoem(id) {
-    if (!await checkAdmin()) return;
+  function deletePoem(index) {
     if (!confirm('确定删除这首诗吗？')) return;
-    await db.from('poems').delete().eq('id', id);
+    const poems = loadPoems();
+    poems.splice(index, 1);
+    savePoems(poems);
     renderPoems();
   }
 
@@ -865,24 +851,26 @@
     { name: '丘贝雷', grade: 'MG', series: 'UC 0087', status: '已完工 · 深入拆解', note: '哈曼·卡恩的座机。独特的漏斗设计和流线型装甲。对机体内部结构进行了详细分析。' },
   ];
 
-  async function loadGunpla() {
-    const { data } = await db.from('gunpla').select('*').order('id', { ascending: false });
-    return (data && data.length) ? data : [...defaultGunpla];
+  function loadGunpla() {
+    const saved = localStorage.getItem('sizekun_gunpla');
+    return saved ? JSON.parse(saved) : [...defaultGunpla];
   }
+  function saveGunpla(list) { localStorage.setItem('sizekun_gunpla', JSON.stringify(list)); }
 
   const gradeIcons = { PG: '👑', MG: '🤖', RG: '⚙️', HG: '🔧', SD: '🧸' };
   const gradeClass = { PG: 'grade-pg', MG: 'grade-mg', RG: 'grade-rg', HG: 'grade-hg', SD: 'grade-hg' };
 
-  async function renderGunpla() {
-    const list = await loadGunpla();
+  function renderGunpla() {
+    const list = loadGunpla();
     const container = document.getElementById('gunplaList');
-    container.innerHTML = list.map((g) => `
+    container.innerHTML = list.map((g, i) => `
       <div class="gunpla-card reveal">
         <div class="gunpla-img">${gradeIcons[g.grade] || '🤖'}</div>
         <div class="gunpla-info">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div class="gunpla-name">${g.name}</div>
-            ${g.id ? `<button class="delete-btn" onclick="deleteGunpla(${g.id})" title="删除">✕</button>` : ''}
+            <button class="feed-export" onclick="exportItem('sizekun_gunpla',${i})">导出</button>
+            <button class="delete-btn" onclick="deleteGunpla(${i})" title="删除">✕</button>
           </div>
           <div class="gunpla-meta">${g.series} · ${g.status}</div>
           <span class="gunpla-grade ${gradeClass[g.grade] || 'grade-mg'}">${g.grade}</span>
@@ -893,15 +881,16 @@
     document.querySelectorAll('#gunplaList .reveal').forEach(el => obs.observe(el));
   }
 
-  async function addGunpla() {
-    if (!await checkAdmin()) return;
+  function addGunpla() {
     const name = document.getElementById('gunplaName').value.trim();
     const grade = document.getElementById('gunplaGrade').value;
     const series = document.getElementById('gunplaSeries').value.trim();
     const status = document.getElementById('gunplaStatus').value.trim();
     const note = document.getElementById('gunplaNote').value.trim();
     if (!name) { alert('请输入机体名称'); return; }
-    await db.from('gunpla').insert({ name, grade, series: series || 'UC', status: status || '收藏中', note });
+    const list = loadGunpla();
+    list.unshift({ name, grade, series: series || 'UC', status: status || '收藏中', note });
+    saveGunpla(list);
     renderGunpla();
     document.getElementById('gunplaName').value = '';
     document.getElementById('gunplaSeries').value = '';
@@ -909,10 +898,11 @@
     document.getElementById('gunplaNote').value = '';
   }
 
-  async function deleteGunpla(id) {
-    if (!await checkAdmin()) return;
+  function deleteGunpla(index) {
     if (!confirm('确定删除这个模型吗？')) return;
-    await db.from('gunpla').delete().eq('id', id);
+    const list = loadGunpla();
+    list.splice(index, 1);
+    saveGunpla(list);
     renderGunpla();
   }
 
@@ -928,15 +918,13 @@
     {text:'我来书写你校园里最后的几帧画面',images:['life_31.jpg','life_32.jpg','life_33.jpg'],time:'2025.06.25 20:30'},
     {text:'阳光下的你，泪水折射出的彩虹',images:['life_34.jpg','life_35.jpg','life_36.jpg','life_37.jpg','life_38.jpg','life_39.jpg','life_40.jpg','life_41.jpg','life_42.jpg'],time:'2025.06.25 20:35'}
   ];
-  async function loadLife() {
-    const { data } = await db.from('life_posts').select('*').order('id', { ascending: false });
-    return (data && data.length) ? data : [...defaultLife];
-  }
+  function loadLife() { const s = localStorage.getItem('sizekun_life'); const user = s ? JSON.parse(s) : []; return [...user, ...defaultLife]; }
+  function saveLife(posts) { localStorage.setItem('sizekun_life', JSON.stringify(posts)); }
 
-  async function renderLife() {
-    const posts = await loadLife();
+  function renderLife() {
+    const posts = loadLife();
     const container = document.getElementById('lifeFeed');
-    container.innerHTML = posts.map((p) => `
+    container.innerHTML = posts.map((p, i) => `
       <div class="feed-post reveal">
         <div class="feed-header">
           <div class="feed-avatar">🐱</div>
@@ -944,17 +932,17 @@
             <div class="feed-name">人以沢坤</div>
             <div class="feed-time">${p.time}</div>
           </div>
-          ${p.id ? `<button class="feed-delete" onclick="deleteLifePost(${p.id})">删除</button>` : ''}
+          <button class="feed-export" onclick="exportItem('sizekun_life',${i})">导出</button>
+          <button class="feed-delete" onclick="deleteLifePost(${i})">删除</button>
         </div>
         ${p.text ? `<div class="feed-body">${p.text}</div>` : ''}
-        ${p.images && p.images.length ? `<div class="feed-images">${(typeof p.images==='string'?JSON.parse(p.images):p.images).map(img => `<img src="${img}" alt="生活照">`).join('')}</div>` : ''}
+        ${p.images && p.images.length ? `<div class="feed-images">${p.images.map(img => `<img src="${img}" alt="生活照">`).join('')}</div>` : ''}
       </div>
     `).join('');
     document.querySelectorAll('#lifeFeed .reveal').forEach(el => obs.observe(el));
   }
 
   async function addLifePost() {
-    if (!await checkAdmin()) return;
     const text = document.getElementById('lifeText').value.trim();
     const fileInput = document.getElementById('lifeImage');
     const files = fileInput.files;
@@ -970,19 +958,33 @@
       }
     }
     if (!text && !images.length) { alert('请至少输入文字或选择图片'); return; }
+    const posts = loadLife();
     const now = new Date();
     const timeStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    await db.from('life_posts').insert({ text, images: JSON.stringify(images), time: timeStr });
+    posts.unshift({ text, images, time: timeStr });
+    saveLife(posts);
     renderLife();
     document.getElementById('lifeText').value = '';
     fileInput.value = '';
     document.getElementById('lifeImageHint').textContent = '';
   }
 
-  async function deleteLifePost(id) {
-    if (!await checkAdmin()) return;
+  function exportItem(storageKey, index) {
+    let data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    // Merge defaults for life
+    if (storageKey === 'sizekun_life') data = [...data, ...defaultLife];
+    if (!data[index]) return;
+    const item = JSON.stringify(data[index], null, 2);
+    navigator.clipboard.writeText(item).then(() => {
+      alert('已复制到剪贴板！发给管理员即可更新网站。');
+    });
+  }
+
+  function deleteLifePost(index) {
     if (!confirm('确定删除这条分享吗？')) return;
-    await db.from('life_posts').delete().eq('id', id);
+    const posts = loadLife();
+    posts.splice(index, 1);
+    saveLife(posts);
     renderLife();
   }
 
