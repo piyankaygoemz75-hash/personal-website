@@ -202,6 +202,7 @@
     <li><button data-page="poetry">诗歌</button></li>
     <li><button data-page="gunpla">高达</button></li>
     <li><button data-page="profile">数据</button></li>
+    <li><button data-page="guestbook">留言</button></li>
     <li><button data-page="links">联系</button></li>
   </ul>
 </nav>
@@ -598,6 +599,33 @@
     </div>
   </div>
 
+  <!-- ==================== GUESTBOOK PAGE ==================== -->
+  <div class="page" id="page-guestbook">
+    <section class="section">
+      <div class="section-label">// GUESTBOOK</div>
+      <h2 class="section-title">留言板</h2>
+
+      <div class="add-form">
+        <h3>+ 写下留言</h3>
+        <div class="form-row">
+          <input type="text" id="gbName" placeholder="你的名字" maxlength="20" style="flex:1;">
+          <span id="gbCount" style="font-size:0.75rem;color:var(--text-dim);">0/50</span>
+        </div>
+        <div class="form-row">
+          <textarea id="gbMessage" placeholder="写下你想说的话（50字以内）..." maxlength="50" oninput="document.getElementById('gbCount').textContent=this.value.length+'/50'"></textarea>
+        </div>
+        <button class="btn" onclick="addGuestbook()">发布留言</button>
+      </div>
+
+      <div id="guestbookList"></div>
+    </section>
+
+    <div class="footer">
+      <div class="footer-poem">留下你想说的话<br>哪怕只是一句问候</div>
+      <div class="footer-text">💬 留言板 · 无需密码即可留言</div>
+    </div>
+  </div>
+
   <!-- ==================== LINKS PAGE ==================== -->
   <div class="page" id="page-links">
     <section class="section">
@@ -659,7 +687,7 @@
   const SUPABASE_URL = 'https://usvejbvhhxrupwpgiuww.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_ldPHDqi4Rx9D1zktaTbqEA_VmqpsNp1';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const ADMIN_PW_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // SHA256('admin123')
+  const ADMIN_PW_HASH = '73dd77b2f0ee603f00df3e977bfead01a5df6f6afd89e399642349ce0081ec4a'; // SHA256('xyq1226')
   let adminVerified = false;
 
   async function checkAdmin() {
@@ -685,6 +713,7 @@
     if (name === 'poetry') renderPoems();
     if (name === 'gunpla') renderGunpla();
     if (name === 'life') renderLife();
+    if (name === 'guestbook') renderGuestbook();
   }
 
   // ===== SCROLL REVEAL =====
@@ -984,6 +1013,48 @@
     if (!confirm('确定删除这条分享吗？')) return;
     await db.from('life_posts').delete().eq('id', id);
     renderLife();
+  }
+
+  // ===== GUESTBOOK =====
+  async function renderGuestbook() {
+    document.getElementById('guestbookList').innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px;">加载中...</p>';
+    const { data } = await db.from('guestbook').select('*').order('id', { ascending: false });
+    const list = data || [];
+    const container = document.getElementById('guestbookList');
+    container.innerHTML = list.map(g => `
+      <div class="feed-post reveal" style="margin-top:12px;">
+        <div class="feed-header">
+          <div class="feed-avatar" style="background:var(--bg-card-hover);">${g.name.charAt(0)}</div>
+          <div class="feed-meta">
+            <div class="feed-name">${g.name}</div>
+            <div class="feed-time">${new Date(g.created_at).toLocaleString('zh-CN')}</div>
+          </div>
+          <button class="feed-delete" onclick="deleteGuestbook(${g.id})">删除</button>
+        </div>
+        <div class="feed-body">${g.message}</div>
+      </div>
+    `).join('');
+    document.querySelectorAll('#guestbookList .reveal').forEach(el => obs.observe(el));
+  }
+
+  async function addGuestbook() {
+    const name = document.getElementById('gbName').value.trim();
+    const message = document.getElementById('gbMessage').value.trim();
+    if (!name) { alert('请输入你的名字'); return; }
+    if (!message) { alert('请输入留言内容'); return; }
+    if (message.length > 50) { alert('留言不能超过50字'); return; }
+    await db.from('guestbook').insert({ name, message });
+    renderGuestbook();
+    document.getElementById('gbName').value = '';
+    document.getElementById('gbMessage').value = '';
+    document.getElementById('gbCount').textContent = '0/50';
+  }
+
+  async function deleteGuestbook(id) {
+    if (!await checkAdmin()) return;
+    if (!confirm('确定删除这条留言吗？')) return;
+    await db.from('guestbook').delete().eq('id', id);
+    renderGuestbook();
   }
 
   // ===== INIT =====
